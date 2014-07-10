@@ -46,6 +46,10 @@
             this.tsbutShowActivity = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.tsbutQuit = new System.Windows.Forms.ToolStripButton();
+            this.cboMeasure = new System.Windows.Forms.ComboBox();
+            this.lblMeasure = new System.Windows.Forms.Label();
+            this.lblDistribution = new System.Windows.Forms.Label();
+            this.cboDistribution = new System.Windows.Forms.ComboBox();
             this.grdRepository.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudMinRevision)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudMaxRevision)).BeginInit();
@@ -151,7 +155,7 @@
             0,
             0});
             this.nudMinRevision.Name = "nudMinRevision";
-            this.nudMinRevision.Size = new System.Drawing.Size(120, 20);
+            this.nudMinRevision.Size = new System.Drawing.Size(74, 20);
             this.nudMinRevision.TabIndex = 12;
             this.nudMinRevision.Value = new decimal(new int[] {
             1,
@@ -174,7 +178,7 @@
             0,
             0});
             this.nudMaxRevision.Name = "nudMaxRevision";
-            this.nudMaxRevision.Size = new System.Drawing.Size(120, 20);
+            this.nudMaxRevision.Size = new System.Drawing.Size(74, 20);
             this.nudMaxRevision.TabIndex = 14;
             this.nudMaxRevision.Value = new decimal(new int[] {
             1,
@@ -258,11 +262,53 @@
             this.tsbutQuit.Text = "Quit";
             this.tsbutQuit.Click += new System.EventHandler(this.QuitClick);
             // 
+            // cboMeasure
+            // 
+            this.cboMeasure.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.cboMeasure.FormattingEnabled = true;
+            this.cboMeasure.Location = new System.Drawing.Point(303, 153);
+            this.cboMeasure.Name = "cboMeasure";
+            this.cboMeasure.Size = new System.Drawing.Size(281, 21);
+            this.cboMeasure.TabIndex = 16;
+            // 
+            // lblMeasure
+            // 
+            this.lblMeasure.AutoSize = true;
+            this.lblMeasure.Location = new System.Drawing.Point(227, 155);
+            this.lblMeasure.Name = "lblMeasure";
+            this.lblMeasure.Size = new System.Drawing.Size(48, 13);
+            this.lblMeasure.TabIndex = 17;
+            this.lblMeasure.Text = "Measure";
+            // 
+            // lblDistribution
+            // 
+            this.lblDistribution.AutoSize = true;
+            this.lblDistribution.Location = new System.Drawing.Point(227, 181);
+            this.lblDistribution.Name = "lblDistribution";
+            this.lblDistribution.Size = new System.Drawing.Size(59, 13);
+            this.lblDistribution.TabIndex = 18;
+            this.lblDistribution.Text = "Distribution";
+            // 
+            // cboDistribution
+            // 
+            this.cboDistribution.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.cboDistribution.FormattingEnabled = true;
+            this.cboDistribution.Location = new System.Drawing.Point(303, 181);
+            this.cboDistribution.Name = "cboDistribution";
+            this.cboDistribution.Size = new System.Drawing.Size(281, 21);
+            this.cboDistribution.TabIndex = 19;
+            // 
             // ConfigurationForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(602, 206);
+            this.ClientSize = new System.Drawing.Size(602, 209);
+            this.Controls.Add(this.cboDistribution);
+            this.Controls.Add(this.lblDistribution);
+            this.Controls.Add(this.lblMeasure);
+            this.Controls.Add(this.cboMeasure);
             this.Controls.Add(this.tsConfig);
             this.Controls.Add(this.nudMaxRevision);
             this.Controls.Add(this.chkMaxRevision);
@@ -304,6 +350,10 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripButton tsbutShowActivity;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ComboBox cboMeasure;
+        private System.Windows.Forms.Label lblMeasure;
+        private System.Windows.Forms.Label lblDistribution;
+        private System.Windows.Forms.ComboBox cboDistribution;
     }
 }
 

@@ -4,6 +4,10 @@ namespace RepositoryScanner.Activity
 {
     public class UniformActivityDistribution : ActivityDistributionBase
     {
+        public UniformActivityDistribution():this(1)
+        {            
+        }
+
         public UniformActivityDistribution(double maxActivity = 1.0)
         {
             if (maxActivity <= 0)

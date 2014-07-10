@@ -1,7 +1,9 @@
-﻿using RepositoryScanner.Stats;
+﻿using System.ComponentModel;
+using RepositoryScanner.Stats;
 
 namespace RepositoryScanner.Measures
 {
+    [Description("Leader Revisions Count Measure")]
     public class LeaderRevisionsCountMeasure : IDaylyStatsMeasure
     {
         /// <summary>

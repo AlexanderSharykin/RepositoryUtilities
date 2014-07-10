@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Windows.Forms;
 using RepositoryAccess;
 using RepositoryScanner;
@@ -11,16 +12,39 @@ namespace RepositoryVisualClient
     public partial class ConfigurationForm : Form
     {
         private readonly bool _defaultConfig;
+        private Type[] _measures;
+        private Type[] _distributions;
 
         public ConfigurationForm()
         {
             InitializeComponent();
+            
+            _measures =new []{typeof(RevisionsCountMeasure), typeof(LeaderRevisionsCountMeasure)};
+            _distributions = new [] {typeof (UniformActivityDistribution), typeof (NormalActivityDistribution)};
 
+            foreach (var t in _measures)
+                cboMeasure.Items.Add(GetTypeDescription(t));
+
+            foreach (var t in _distributions)
+                cboDistribution.Items.Add(GetTypeDescription(t));
+            
+            cboMeasure.SelectedIndex = cboDistribution.SelectedIndex = 0;
+            
             var loader = new ConfigurationStorage();
             var repository = loader.GetConfiguration(ConfigurationStorage.DefaultConfig);
             _defaultConfig = repository != null;
             if (_defaultConfig)            
                 DisplayRepositoryInfo(repository);            
+        }
+
+        private static string GetTypeDescription(Type t)
+        {
+            string description;
+            var attr = t.GetCustomAttributes(typeof (DescriptionAttribute), false);
+            if (attr.Length == 0)
+                description = string.Format("{0} ({1})", t.Name, t.Assembly.GetName().Name);
+            else description = ((DescriptionAttribute) attr[0]).Description;
+            return description;
         }
 
         /// <summary>
@@ -34,10 +58,8 @@ namespace RepositoryVisualClient
             service.AuthenticationNeeded += ShowAuthenticationForm;
             
             var client = new RepositoryHistoryScanner(service);
-            client.Measure = new RevisionsCountMeasure();
-            //client.Measure = new LeaderCommitCountMeasure();
-            //client.Distibution = new NormalActivityDistribution();
-            client.Distibution = new UniformActivityDistribution();
+            client.Measure = (IDaylyStatsMeasure)Activator.CreateInstance(_measures[cboMeasure.SelectedIndex]);
+            client.Distibution = (IActivityDistribution)Activator.CreateInstance(_distributions[cboDistribution.SelectedIndex]);
 
             var history = client.LoadHistory(repo);
             if (history != null)

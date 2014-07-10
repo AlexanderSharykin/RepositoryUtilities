@@ -1,9 +1,15 @@
 ﻿using System;
+using System.ComponentModel;
 
 namespace RepositoryScanner.Activity
 {
+    [Description("Standard Normal Activity Distribution")]
     public class NormalActivityDistribution : ActivityDistributionBase
     {
+        public NormalActivityDistribution():this(1)
+        {            
+        }
+
         public NormalActivityDistribution(double maxActivity = 1.0)
         {
             if (maxActivity <= 0)
