@@ -17,6 +17,17 @@
             {
                 components.Dispose();
             }
+            if (_brushes != null)
+            {
+                foreach (var brush in _brushes)                
+                    brush.Dispose();                
+                _brushes = null;
+                if (_headerBrush != null)
+                {
+                    _headerBrush.Dispose();
+                    _headerBrush = null;
+                }
+            }
             base.Dispose(disposing);
         }
 
@@ -28,9 +39,9 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             this.grdActivity = new System.Windows.Forms.DataGridView();
             this.cboAuthors = new System.Windows.Forms.ComboBox();
             this.lblAuthors = new System.Windows.Forms.Label();
@@ -41,13 +52,14 @@
             this.lblLegend = new System.Windows.Forms.Label();
             this.grdLegend = new System.Windows.Forms.DataGridView();
             this.grdBestStats = new System.Windows.Forms.DataGridView();
-            this.lblBestStats = new System.Windows.Forms.Label();
-            this.txtSelectedStats = new System.Windows.Forms.TextBox();
-            this.lblSelectedStats = new System.Windows.Forms.Label();
             this.cStreak = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cStreakDates = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cMaxCommit = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cMaxCommitDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.lblBestStats = new System.Windows.Forms.Label();
+            this.txtSelectedStats = new System.Windows.Forms.TextBox();
+            this.lblSelectedStats = new System.Windows.Forms.Label();
+            this.butPrint = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.grdActivity)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.grdLegend)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.grdBestStats)).BeginInit();
@@ -155,14 +167,14 @@
             this.grdLegend.AllowUserToResizeColumns = false;
             this.grdLegend.AllowUserToResizeRows = false;
             this.grdLegend.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle7.BackColor = System.Drawing.Color.Wheat;
-            dataGridViewCellStyle7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            dataGridViewCellStyle7.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle7.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle7.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.grdLegend.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle7;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle4.BackColor = System.Drawing.Color.Wheat;
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.grdLegend.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle4;
             this.grdLegend.ColumnHeadersHeight = 25;
             this.grdLegend.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.grdLegend.Location = new System.Drawing.Point(572, 342);
@@ -179,14 +191,14 @@
             this.grdBestStats.AllowUserToDeleteRows = false;
             this.grdBestStats.AllowUserToResizeColumns = false;
             this.grdBestStats.AllowUserToResizeRows = false;
-            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle8.BackColor = System.Drawing.Color.Wheat;
-            dataGridViewCellStyle8.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            dataGridViewCellStyle8.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle8.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle8.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.grdBestStats.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle8;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle5.BackColor = System.Drawing.Color.Wheat;
+            dataGridViewCellStyle5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.grdBestStats.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
             this.grdBestStats.ColumnHeadersHeight = 25;
             this.grdBestStats.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.grdBestStats.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
@@ -194,14 +206,14 @@
             this.cStreakDates,
             this.cMaxCommit,
             this.cMaxCommitDate});
-            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle9.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle9.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            dataGridViewCellStyle9.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle9.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle9.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle9.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.grdBestStats.DefaultCellStyle = dataGridViewCellStyle9;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle6.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle6.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            dataGridViewCellStyle6.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.grdBestStats.DefaultCellStyle = dataGridViewCellStyle6;
             this.grdBestStats.Location = new System.Drawing.Point(12, 342);
             this.grdBestStats.Name = "grdBestStats";
             this.grdBestStats.ReadOnly = true;
@@ -210,36 +222,6 @@
             this.grdBestStats.ScrollBars = System.Windows.Forms.ScrollBars.None;
             this.grdBestStats.Size = new System.Drawing.Size(480, 50);
             this.grdBestStats.TabIndex = 11;
-            // 
-            // lblBestStats
-            // 
-            this.lblBestStats.AutoSize = true;
-            this.lblBestStats.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.lblBestStats.Location = new System.Drawing.Point(9, 322);
-            this.lblBestStats.Name = "lblBestStats";
-            this.lblBestStats.Size = new System.Drawing.Size(68, 16);
-            this.lblBestStats.TabIndex = 12;
-            this.lblBestStats.Text = "Best Stats";
-            // 
-            // txtSelectedStats
-            // 
-            this.txtSelectedStats.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.txtSelectedStats.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.txtSelectedStats.Location = new System.Drawing.Point(12, 398);
-            this.txtSelectedStats.Name = "txtSelectedStats";
-            this.txtSelectedStats.ReadOnly = true;
-            this.txtSelectedStats.Size = new System.Drawing.Size(68, 22);
-            this.txtSelectedStats.TabIndex = 13;
-            // 
-            // lblSelectedStats
-            // 
-            this.lblSelectedStats.AutoSize = true;
-            this.lblSelectedStats.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.lblSelectedStats.Location = new System.Drawing.Point(86, 401);
-            this.lblSelectedStats.Name = "lblSelectedStats";
-            this.lblSelectedStats.Size = new System.Drawing.Size(153, 16);
-            this.lblSelectedStats.TabIndex = 14;
-            this.lblSelectedStats.Text = "0 commits on 2014-30-06";
             // 
             // cStreak
             // 
@@ -272,11 +254,56 @@
             this.cMaxCommitDate.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.cMaxCommitDate.Width = 140;
             // 
-            // GitActivityChartForm
+            // lblBestStats
+            // 
+            this.lblBestStats.AutoSize = true;
+            this.lblBestStats.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.lblBestStats.Location = new System.Drawing.Point(9, 322);
+            this.lblBestStats.Name = "lblBestStats";
+            this.lblBestStats.Size = new System.Drawing.Size(68, 16);
+            this.lblBestStats.TabIndex = 12;
+            this.lblBestStats.Text = "Best Stats";
+            // 
+            // txtSelectedStats
+            // 
+            this.txtSelectedStats.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtSelectedStats.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.txtSelectedStats.Location = new System.Drawing.Point(12, 398);
+            this.txtSelectedStats.Name = "txtSelectedStats";
+            this.txtSelectedStats.ReadOnly = true;
+            this.txtSelectedStats.Size = new System.Drawing.Size(68, 22);
+            this.txtSelectedStats.TabIndex = 13;
+            // 
+            // lblSelectedStats
+            // 
+            this.lblSelectedStats.AutoSize = true;
+            this.lblSelectedStats.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.lblSelectedStats.Location = new System.Drawing.Point(86, 401);
+            this.lblSelectedStats.Name = "lblSelectedStats";
+            this.lblSelectedStats.Size = new System.Drawing.Size(153, 16);
+            this.lblSelectedStats.TabIndex = 14;
+            this.lblSelectedStats.Text = "0 commits on 2014-30-06";
+            // 
+            // butPrint
+            // 
+            this.butPrint.Image = global::RepositoryVisualClient.Properties.Resources.Print;
+            this.butPrint.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.butPrint.Location = new System.Drawing.Point(528, 6);
+            this.butPrint.Margin = new System.Windows.Forms.Padding(4);
+            this.butPrint.Name = "butPrint";
+            this.butPrint.Size = new System.Drawing.Size(90, 23);
+            this.butPrint.TabIndex = 15;
+            this.butPrint.Text = "Print Chart";
+            this.butPrint.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.butPrint.UseVisualStyleBackColor = true;
+            this.butPrint.Click += new System.EventHandler(this.PrintClick);
+            // 
+            // ActivityChartForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(884, 740);
+            this.Controls.Add(this.butPrint);
             this.Controls.Add(this.lblSelectedStats);
             this.Controls.Add(this.txtSelectedStats);
             this.Controls.Add(this.lblBestStats);
@@ -291,7 +318,7 @@
             this.Controls.Add(this.cboAuthors);
             this.Controls.Add(this.grdActivity);
             this.MinimumSize = new System.Drawing.Size(900, 600);
-            this.Name = "GitActivityChartForm";
+            this.Name = "ActivityChartForm";
             this.Text = "GitActivityChartForm";
             ((System.ComponentModel.ISupportInitialize)(this.grdActivity)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.grdLegend)).EndInit();
@@ -320,5 +347,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn cStreakDates;
         private System.Windows.Forms.DataGridViewTextBoxColumn cMaxCommit;
         private System.Windows.Forms.DataGridViewTextBoxColumn cMaxCommitDate;
+        private System.Windows.Forms.Button butPrint;
     }
 }
