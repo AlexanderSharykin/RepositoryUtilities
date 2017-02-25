@@ -1,0 +1,152 @@
+﻿<Window x:Class="WpfClient.ConfigurationWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:vm="clr-namespace:ViewModels;assembly=ViewModels"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance vm:ConfigurationVm, IsDesignTimeCreatable=True}"
+        Title="Configuration" 
+        SizeToContent="WidthAndHeight"
+        MinHeight="440" MinWidth="440">
+    
+    <Grid Margin="8" Grid.IsSharedSizeScope="True">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+
+        </Grid.RowDefinitions>
+        
+        <StackPanel Orientation="Horizontal">
+            <StackPanel.Resources>
+                <Style TargetType="Image">
+                    <Setter Property="Width" Value="24"/>
+                    <Setter Property="Height" Value="24"/>
+                </Style>
+
+                <Style TargetType="Button">
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="Padding" Value="2"/>
+                    <Setter Property="Margin" Value="2"/>                    
+                    <Setter Property="BorderBrush" Value="LightGray"/>                    
+                </Style>
+            </StackPanel.Resources>
+
+            <Button ToolTip="Load configuration"  Command="{Binding Path=LoadConfigCmd}">
+                <Image Source="Resources/Load.png"/>
+            </Button>
+
+            <Button ToolTip="Save configuration" Command="{Binding Path=SaveConfigCmd}">
+                <Image Source="Resources/Save.png"/>
+            </Button>
+            
+            <Button Command="{Binding Path=ShowHistoryCmd}">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="Resources/Chart.png"/>
+                    <TextBlock Text="Activity Chart" VerticalAlignment="Center" Margin="4,0"/>
+                </StackPanel>
+            </Button>
+
+            <Button ToolTip="Quit" Click="CloseClick">
+                <Image Source="Resources/Quit.png"/>
+            </Button>
+        </StackPanel>
+
+        <GroupBox Grid.Row="1" Header="Repository">
+            <Grid Margin="8">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="16"/>                    
+                    <RowDefinition Height="Auto"/>                    
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Labels"/>
+                    <ColumnDefinition Width="8"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <RadioButton Name="RdoUri" IsChecked="{Binding IsUriSelected}" Content="Uri" VerticalAlignment="Center"/>
+                <TextBox Grid.Column="2" Name="TxtUri"
+                         Text="{Binding Uri, UpdateSourceTrigger=PropertyChanged}" 
+                         IsReadOnly="{Binding ElementName=RdoPath, Path=IsChecked}"/>
+
+                <RadioButton Grid.Row="2" Name="RdoPath"  IsChecked="{Binding IsPathSelected}" Content="Path" VerticalAlignment="Center"/>
+                <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding Path, UpdateSourceTrigger=PropertyChanged}" 
+                         IsReadOnly="{Binding ElementName=RdoUri, Path=IsChecked}"/>
+            </Grid>
+        </GroupBox>
+
+        <GroupBox Grid.Row="2" Header="Project">
+            <Grid Margin="8">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="16"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Labels"/>
+                    <ColumnDefinition Width="8"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Label Content="Name" VerticalAlignment="Center"/>
+                <TextBox Grid.Column="2" Name="TxtProject"
+                         Text="{Binding Path=ProjectName, UpdateSourceTrigger=PropertyChanged}"/>
+
+                <Grid Grid.Row="2" Grid.ColumnSpan="3">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="8"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="8"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <CheckBox Name="ChkMinRevision" Content="From Revision" 
+                              IsChecked="{Binding UseMinRevision}"
+                              VerticalAlignment="Center"/>
+                    <TextBox Grid.Row="0" Grid.Column="2" HorizontalContentAlignment="Left" 
+                             Text="{Binding MinRevision}"
+                             IsEnabled="{Binding ElementName=ChkMinRevision, Path=IsChecked}" 
+                             PreviewTextInput="TextBoxNumericInput"/>
+
+                    <CheckBox Name="ChkMaxRevision" Grid.Row="2" Content="To Revision" 
+                              IsChecked="{Binding UseMaxRevision}"
+                              VerticalAlignment="Center" />
+                    <TextBox Grid.Row="2" Grid.Column="2" HorizontalContentAlignment="Left" 
+                             Text="{Binding MaxRevision}"
+                             IsEnabled="{Binding ElementName=ChkMaxRevision, Path=IsChecked}"
+                             PreviewTextInput="TextBoxNumericInput"/>
+                </Grid>                
+            </Grid>
+        </GroupBox>
+
+        <GroupBox Grid.Row="3" Header="Measures">
+            <Grid Margin="8">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="16"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="8"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Label Content="Measure" VerticalAlignment="Center"/>
+                <ComboBox Grid.Column="2" DisplayMemberPath="Name"
+                          ItemsSource="{Binding KnownMeasures}" SelectedItem="{Binding SelectedMeasure}"/>
+
+                <Label Grid.Row="2" Content="Distribution" VerticalAlignment="Center"/>
+                <ComboBox Grid.Row="2" Grid.Column="2" DisplayMemberPath="Name"
+                          ItemsSource="{Binding KnownDistributions}" SelectedItem="{Binding SelectedDistribution}"/>
+            </Grid>
+        </GroupBox>
+    </Grid>
+</Window>

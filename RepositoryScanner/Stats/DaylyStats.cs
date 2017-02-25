@@ -8,10 +8,14 @@ namespace RepositoryScanner.Stats
     {
         private IList<RevisionInfo> _commits;
 
+        public DaylyStats()
+        {
+            
+        }
+
         public DaylyStats(DateTime date)
         {
-            Date = date.Midnight();
-            Activity = ActivityLevel.None;
+            Date = date.Date;            
         }        
 
         public DateTime Date { get; private set; }
@@ -36,6 +40,6 @@ namespace RepositoryScanner.Stats
             }
         }
 
-        public ActivityLevel Activity { get; internal set; }
+        public ActivityLevel Activity { get; set; }
     }
 }

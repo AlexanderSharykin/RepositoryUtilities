@@ -83,9 +83,10 @@
             this.grdActivity.ScrollBars = System.Windows.Forms.ScrollBars.Horizontal;
             this.grdActivity.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
             this.grdActivity.Size = new System.Drawing.Size(860, 280);
-            this.grdActivity.TabIndex = 0;
+            this.grdActivity.TabIndex = 0;            
             this.grdActivity.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.ActivityGridCellFormatting);
             this.grdActivity.CellPainting += new System.Windows.Forms.DataGridViewCellPaintingEventHandler(this.ActivityGridCellPainting);
+            this.grdActivity.CurrentCellChanged += new System.EventHandler(this.SelectedDayChanged);
             // 
             // cboAuthors
             // 

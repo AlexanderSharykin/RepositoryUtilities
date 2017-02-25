@@ -44,7 +44,8 @@
   <ItemGroup>
     <Compile Include="Activity\ActivityDistributionBase.cs" />
     <Compile Include="Activity\ActivityLevel.cs" />
-    <Compile Include="Extensions.cs" />
+    <Compile Include="RepositoryConnection\AuthenticationNeededEventArgs.cs" />
+    <Compile Include="ConfigurationStorage.cs" />
     <Compile Include="Measures\LeaderRevisionsCountMeasure.cs" />
     <Compile Include="Measures\RevisionsCountMeasure.cs" />
     <Compile Include="RepositoryConnection\IRepositoryConnection.cs" />

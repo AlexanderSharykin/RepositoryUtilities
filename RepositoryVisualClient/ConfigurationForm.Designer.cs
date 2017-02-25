@@ -79,6 +79,7 @@
             this.txtPath.Name = "txtPath";
             this.txtPath.Size = new System.Drawing.Size(467, 20);
             this.txtPath.TabIndex = 3;
+            this.txtPath.TextChanged += new System.EventHandler(this.PathChanged);
             // 
             // txtUri
             // 
@@ -88,6 +89,7 @@
             this.txtUri.Name = "txtUri";
             this.txtUri.Size = new System.Drawing.Size(467, 20);
             this.txtUri.TabIndex = 2;
+            this.txtUri.TextChanged += new System.EventHandler(this.UriChanged);
             // 
             // rdoPath
             // 
@@ -128,6 +130,7 @@
             this.txtProject.Name = "txtProject";
             this.txtProject.Size = new System.Drawing.Size(467, 20);
             this.txtProject.TabIndex = 9;
+            this.txtProject.TextChanged += new System.EventHandler(this.ProjectChanged);
             // 
             // chkMinRevision
             // 
@@ -162,6 +165,7 @@
             0,
             0,
             0});
+            this.nudMinRevision.ValueChanged += new System.EventHandler(this.MinRevisionChanged);
             // 
             // nudMaxRevision
             // 
@@ -185,6 +189,7 @@
             0,
             0,
             0});
+            this.nudMaxRevision.ValueChanged += new System.EventHandler(this.MaxRevisionChanged);
             // 
             // chkMaxRevision
             // 
@@ -271,6 +276,7 @@
             this.cboMeasure.Name = "cboMeasure";
             this.cboMeasure.Size = new System.Drawing.Size(281, 21);
             this.cboMeasure.TabIndex = 16;
+            this.cboMeasure.SelectedIndexChanged += new System.EventHandler(this.MeasureChanged);
             // 
             // lblMeasure
             // 
@@ -299,6 +305,7 @@
             this.cboDistribution.Name = "cboDistribution";
             this.cboDistribution.Size = new System.Drawing.Size(281, 21);
             this.cboDistribution.TabIndex = 19;
+            this.cboDistribution.SelectedIndexChanged += new System.EventHandler(this.DistributionChanged);
             // 
             // ConfigurationForm
             // 

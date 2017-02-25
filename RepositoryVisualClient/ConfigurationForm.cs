@@ -1,40 +1,99 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Windows.Forms;
-using RepositoryAccess;
-using RepositoryScanner;
-using RepositoryScanner.Activity;
-using RepositoryScanner.Measures;
-using RepositoryScanner.RepositoryConnection;
+using ViewModels;
 
 namespace RepositoryVisualClient
 {
     public partial class ConfigurationForm : Form
     {
-        private readonly bool _defaultConfig;
-        private Type[] _measures;
-        private Type[] _distributions;
+        private ConfigurationVm _dataContext;
 
         public ConfigurationForm()
         {
             InitializeComponent();
-            
-            _measures =new []{typeof(RevisionsCountMeasure), typeof(LeaderRevisionsCountMeasure)};
-            _distributions = new [] {typeof (UniformActivityDistribution), typeof (NormalActivityDistribution)};
+        }
 
-            foreach (var t in _measures)
-                cboMeasure.Items.Add(GetTypeDescription(t));
+        public ConfigurationVm DataContext
+        {
+            get { return _dataContext; }
+            set
+            {
+                if (_dataContext != null)                
+                    _dataContext.PropertyChanged -= DataContextChanged;
 
-            foreach (var t in _distributions)
-                cboDistribution.Items.Add(GetTypeDescription(t));
-            
-            cboMeasure.SelectedIndex = cboDistribution.SelectedIndex = 0;
-            
-            var loader = new ConfigurationStorage();
-            var repository = loader.GetConfiguration(ConfigurationStorage.DefaultConfig);
-            _defaultConfig = repository != null;
-            if (_defaultConfig)            
-                DisplayRepositoryInfo(repository);            
+                _dataContext = value;
+
+                if (_dataContext != null)
+                {
+                    _dataContext.PropertyChanged += DataContextChanged;
+                    SetUri();
+                    SetPath();
+                    SetProjectName();
+                    SetUseMinRevision();
+                    SetMinRevision();
+                    SetUseMaxRevision();
+                    SetMaxRevision();
+
+                    foreach (var t in DataContext.KnownMeasures)
+                        cboMeasure.Items.Add(GetTypeDescription(t));
+
+                    foreach (var t in DataContext.KnownDistributions)
+                        cboDistribution.Items.Add(GetTypeDescription(t));
+                    cboMeasure.SelectedIndex = cboDistribution.SelectedIndex = 0;
+                }
+            }
+        }
+
+        private void DataContextChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case "Uri": SetUri(); break;
+                case "Path": SetPath(); break;
+                case "ProjectName": SetProjectName(); break;
+                case "UseMinRevision": SetUseMinRevision(); break;
+                case "MinRevision": SetMinRevision(); break;
+                case "UseMaxRevision": SetUseMaxRevision(); break;
+                case "MaxRevision": SetMaxRevision(); break;
+            }
+        }
+
+        private void SetUri()
+        {
+            txtUri.Text = DataContext.Uri;
+        }
+
+        private void SetPath()
+        {
+            txtPath.Text = DataContext.Path;
+        }
+
+        private void SetProjectName()
+        {
+            txtProject.Text = DataContext.ProjectName;
+        }
+
+        private void SetUseMinRevision()
+        {
+            chkMinRevision.Checked =
+            nudMinRevision.Enabled = DataContext.UseMinRevision;
+        }
+
+        private void SetMinRevision()
+        {
+            nudMinRevision.Value = DataContext.MinRevision;
+        }
+
+        private void SetUseMaxRevision()
+        {
+            chkMaxRevision.Checked = 
+            nudMaxRevision.Enabled = DataContext.UseMaxRevision;
+        }
+
+        private void SetMaxRevision()
+        {
+            nudMaxRevision.Value = DataContext.MaxRevision;
         }
 
         private static string GetTypeDescription(Type t)
@@ -52,104 +111,55 @@ namespace RepositoryVisualClient
         /// </summary>
         private void ShowActivityClick(object sender, EventArgs e)
         {
-            var repo = CreateRepositoryInfo();
-
-            ISecuredRepositoryConnection service = new SvnRepositoryConnection();
-            service.AuthenticationNeeded += ShowAuthenticationForm;
-            
-            var client = new RepositoryHistoryScanner(service);
-            client.Measure = (IDaylyStatsMeasure)Activator.CreateInstance(_measures[cboMeasure.SelectedIndex]);
-            client.Distibution = (IActivityDistribution)Activator.CreateInstance(_distributions[cboDistribution.SelectedIndex]);
-
-            var history = client.LoadHistory(repo);
-            if (history != null)
-                using (var frm = new ActivityChartForm())
-                    frm.ShowActivity(history);
-            else
-                MessageBox.Show("Couldn't load the history from this repository", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-        }
-
-        /// <summary>
-        /// Shows form with login and password fields
-        /// </summary>
-        private void ShowAuthenticationForm(object sender, AuthenticationNeededEventArgs e)
-        {
-            using (var frm = new AuthenticationForm())
-            {
-                if (frm.ShowDialog() != DialogResult.OK)
-                {
-                    e.Cancel = true;
-                    return;
-                }
-                e.Password = frm.Password;
-                e.Login = frm.Login;
-                Invalidate();
-            }
-        }
-
-        /// <summary>
-        /// Fill in form input fields with repository information
-        /// </summary>
-        /// <param name="repo"></param>
-        private void DisplayRepositoryInfo(RepositoryInfo repo)
-        {
-            txtUri.Text = repo.Uri;            
-            txtPath.Text = repo.Path;
-            if (!string.IsNullOrWhiteSpace(repo.Path))
-                rdoPath.Checked = true;
-            else rdoUri.Checked = true;
-            txtProject.Text = repo.ProjectName;
-            if (repo.MinRevision.HasValue)
-            {
-                chkMinRevision.Checked = true;
-                nudMinRevision.Value = repo.MinRevision.Value;
-            }
-            if (repo.MaxRevision.HasValue)
-            {
-                chkMaxRevision.Checked = true;
-                nudMaxRevision.Value = repo.MaxRevision.Value;
-            }
-        }
-
-        /// <summary>
-        /// Creates repository information taking values from input fields
-        /// </summary>
-        private RepositoryInfo CreateRepositoryInfo()
-        {
-            var repo = new RepositoryInfo();
-            repo.ProjectName = txtProject.Text;
-            if (rdoUri.Checked)
-                repo.Uri = txtUri.Text;
-            else
-                repo.Path = txtPath.Text;
-            if (chkMinRevision.Checked && chkMaxRevision.Checked)
-            {
-                repo.MinRevision = (int)Math.Min(nudMinRevision.Value, nudMaxRevision.Value);
-                repo.MaxRevision = (int)Math.Max(nudMinRevision.Value, nudMaxRevision.Value);
-            }
-            else if (chkMinRevision.Checked)
-                repo.MinRevision = (int)nudMinRevision.Value;
-            else if (chkMaxRevision.Checked)
-                repo.MaxRevision = (int)nudMaxRevision.Value;
-            return repo;
+            if (DataContext.CanShowHistory())
+                DataContext.ShowHistory();
         }
 
         private void MinRevisionCheckedChanged(object sender, EventArgs e)
         {
-            nudMinRevision.Enabled = chkMinRevision.Checked;
+            DataContext.UseMinRevision = chkMinRevision.Checked;
         }
 
         private void MaxRevisionCheckedChanged(object sender, EventArgs e)
         {
-            nudMaxRevision.Enabled = chkMaxRevision.Checked;
+            DataContext.UseMaxRevision = chkMaxRevision.Checked;
         }
 
-        private static void ShowErrorMessage(Exception ex)
+        private void UriChanged(object sender, EventArgs e)
         {
-            if (ex == null)
-                MessageBox.Show("Something has gone wrong", "Unknown Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            else
-                MessageBox.Show(ex.Message, ex.GetType().Name, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            DataContext.Uri = txtUri.Text;
+        }
+
+        private void PathChanged(object sender, EventArgs e)
+        {
+            DataContext.Path = txtPath.Text;
+        }
+
+        private void ProjectChanged(object sender, EventArgs e)
+        {
+            DataContext.ProjectName = txtProject.Text;
+        }
+
+        private void MinRevisionChanged(object sender, EventArgs e)
+        {
+            DataContext.MinRevision = (int)nudMinRevision.Value;
+        }
+
+        private void MaxRevisionChanged(object sender, EventArgs e)
+        {
+            DataContext.MaxRevision = (int)nudMaxRevision.Value;
+        }
+
+        private void MeasureChanged(object sender, EventArgs e)
+        {
+            if (cboMeasure.SelectedIndex > 0)
+                DataContext.SelectedMeasure = DataContext.KnownMeasures[cboMeasure.SelectedIndex];
+        }
+
+        private void DistributionChanged(object sender, EventArgs e)
+        {
+            if (cboDistribution.SelectedIndex > 0)
+                DataContext.SelectedDistribution = DataContext.KnownDistributions[cboDistribution.SelectedIndex];
         }
 
         /// <summary>
@@ -157,21 +167,7 @@ namespace RepositoryVisualClient
         /// </summary>
         private void LoadClick(object sender, EventArgs e)
         {
-            using (var ofd = new OpenFileDialog())
-            {
-                ofd.Multiselect = false;
-                ofd.Filter = "Configuration file|*" + ConfigurationStorage.Extension;
-                if (ofd.ShowDialog() != DialogResult.OK)
-                    return;
-                var loader = new ConfigurationStorage();
-                var repository = loader.GetConfiguration(ofd.FileName);
-                if (repository == null)
-                {
-                    ShowErrorMessage(loader.Error);
-                    return;
-                }
-                DisplayRepositoryInfo(repository);
-            }
+            DataContext.LoadConfig();
         }
 
         /// <summary>
@@ -179,29 +175,7 @@ namespace RepositoryVisualClient
         /// </summary>
         private void SaveClick(object sender, EventArgs e)
         {
-            string name = null;
-            if (_defaultConfig)
-            {
-                var res = MessageBox.Show("Save as default?", "Save", MessageBoxButtons.YesNoCancel,
-                                          MessageBoxIcon.Question);
-                if (res == DialogResult.Cancel)
-                    return;
-                if (res == DialogResult.Yes)
-                    name = ConfigurationStorage.DefaultConfig;
-            }
-            
-            // select file for save
-            if (name == null)
-                using (var sfd = new SaveFileDialog())
-                {
-                    sfd.Filter = "Configuration file|*" + ConfigurationStorage.Extension;
-                    if (sfd.ShowDialog() != DialogResult.OK)
-                        return;
-                    name = sfd.FileName;
-                }
-            var loader = new ConfigurationStorage();
-            if (false == loader.SetConfiguration(CreateRepositoryInfo(), name))
-                ShowErrorMessage(loader.Error);
+            DataContext.SaveConfig();
         }
 
         private void QuitClick(object sender, EventArgs e)

@@ -59,8 +59,8 @@ namespace RepositoryScanner
                 // groups commits by day
                 foreach (var entry in pair.Value)
                 {
-                    
-                    if (daylyStats == null || daylyStats.Date != entry.Time.Midnight())
+
+                    if (daylyStats == null || daylyStats.Date != entry.Time.Date)
                     {
                         // max commit count
                         if (daylyStats != null)
@@ -71,7 +71,7 @@ namespace RepositoryScanner
                         periodStats[daylyStats.Date] = daylyStats;
 
                         // longest streak
-                        var daysDiff = (daylyStats.Date.Midnight() - streakLastDate.Midnight()).Days;
+                        var daysDiff = (daylyStats.Date.Date - streakLastDate.Date).Days;
                         if (daysDiff > 1 &&
                             // doesn't break streak on weekend
                             !(daylyStats.Date.DayOfWeek == DayOfWeek.Monday && daysDiff <= 3))

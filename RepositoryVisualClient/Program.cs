@@ -2,6 +2,8 @@
 using System.IO;
 using System.Threading;
 using System.Windows.Forms;
+using RepositoryAccess;
+using ViewModels;
 
 namespace RepositoryVisualClient
 {
@@ -17,9 +19,19 @@ namespace RepositoryVisualClient
             //Application.SetCompatibleTextRenderingDefault(false);
             Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
             Application.ThreadException += ApplicationOnThreadException;
-            if (File.Exists(ConfigurationStorage.DefaultConfig) == false)
-                ConfigurationStorage.CreateDefaultConfig();
-            Application.Run(new ConfigurationForm());
+            
+            var vm = new ConfigurationVm
+                     {
+                         RepositoryConnection = new SvnRepositoryConnection(),
+                         GetAuthDialog = () => new AuthenticationForm(),
+                         GetChartDialog = () => new ActivityChartForm(),
+                         GetOpenFileDialog = () => new WinformsOpenFileDialog(),
+                         GetSaveFileDialog = () => new WinformsSaveFileDialog(),
+                         GetMessageDialog = () => new WinformsMessageBox()
+                     };
+            var f = new ConfigurationForm();
+            f.DataContext = vm;
+            Application.Run(f);
         }
 
         private static void ApplicationOnThreadException(object sender, ThreadExceptionEventArgs ae)

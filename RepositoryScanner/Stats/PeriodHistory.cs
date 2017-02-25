@@ -12,8 +12,8 @@ namespace RepositoryScanner.Stats
             if (endDate < startDate)
                 throw new ArgumentException("startDate");
             endDate = endDate.AddDays(1);
-            _periodStart = startDate.Midnight();
-            _periodEnd = endDate.Midnight();
+            _periodStart = startDate.Date;
+            _periodEnd = endDate.Date;
             int days = (_periodEnd - _periodStart).Days;
             _weeks = days/7 + (days%7 != 0 ? 1 : 0) + (_periodEnd.DayOfWeek < _periodStart.DayOfWeek ? 1 : 0);
             

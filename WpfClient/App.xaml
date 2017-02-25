@@ -1,0 +1,46 @@
+﻿<Application x:Class="WpfClient.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Startup="App_OnStartup">
+    <Application.Resources>
+         <Style TargetType="Button">
+             <Setter Property="Padding" Value="10,5"/>
+         </Style>
+        
+        <Style TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+        
+        <Style TargetType="TextBox">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="2,4"/>
+        </Style>
+
+        <SolidColorBrush x:Key="BrNone" Color="#eeeeee"/>
+        <SolidColorBrush x:Key="BrLow" Color="#d6e685"/>
+        <SolidColorBrush x:Key="BrAverage" Color="#8cc665"/>
+        <SolidColorBrush x:Key="BrHigh" Color="#44a340"/>
+        <SolidColorBrush x:Key="BrGreat" Color="#1e6823"/>
+
+        <Style x:Key="ActivityStyle" TargetType="Border">            
+            <Setter Property="Width" Value="25"/>
+            <Setter Property="Height" Value="25"/>
+            <Setter Property="Background" Value="{StaticResource BrNone}"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Path=Activity}" Value="Low">
+                    <Setter Property="Background" Value="{StaticResource BrLow}"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Path=Activity}" Value="Average">
+                    <Setter Property="Background" Value="{StaticResource BrAverage}"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Path=Activity}" Value="High">
+                    <Setter Property="Background" Value="{StaticResource BrHigh}"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Path=Activity}" Value="Great">
+                    <Setter Property="Background" Value="{StaticResource BrGreat}"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+    </Application.Resources>
+</Application>

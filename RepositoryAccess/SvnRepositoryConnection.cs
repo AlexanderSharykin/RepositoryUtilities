@@ -10,7 +10,7 @@ using SharpSvn.Security;
 
 namespace RepositoryAccess
 {
-    public sealed class SvnRepositoryConnection : ISecuredRepositoryConnection
+    public sealed class SvnRepositoryConnection : IRepositoryConnection
     {
         /// <summary>
         /// Loads history from repository
@@ -97,7 +97,7 @@ namespace RepositoryAccess
             }
             else if (!string.IsNullOrEmpty(repo.Path))
             {
-                client.GetLog(repo.Path + "/" + repo.ProjectName, logArgs, out logEntries);
+                client.GetLog(repo.Path + "/" + repo.ProjectName, logArgs, out logEntries);                
             }
             else
                 throw new FileNotFoundException("Repository is not specified");

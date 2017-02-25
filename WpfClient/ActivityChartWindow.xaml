@@ -1,0 +1,181 @@
+﻿<Window x:Class="WpfClient.ActivityChartWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:ViewModels;assembly=ViewModels"
+        xmlns:stats="clr-namespace:RepositoryScanner.Stats;assembly=RepositoryScanner"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"        
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance vm:PeriodHistoryVm, IsDesignTimeCreatable=True}"
+        Title="ActivityChartWindow"
+        SizeToContent="WidthAndHeight"
+        MinHeight="480" MinWidth="640">
+    
+    <Window.Resources>
+        <RotateTransform x:Key="a90" Angle="-90"/>
+    </Window.Resources>
+    
+    <Grid Margin="8">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>                        
+            <RowDefinition Height="*"/>            
+        </Grid.RowDefinitions>
+        
+        <StackPanel Orientation="Horizontal">
+            <Label Content="Author"/>
+            <ComboBox ItemsSource="{Binding Path=Authors}" 
+                      SelectedItem="{Binding Path=SelectedAuthor}"
+                      VerticalAlignment="Center"/>
+        </StackPanel>               
+        
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+            <Label Content="Period" Margin="25,0,0,0"/>
+            <DatePicker Margin="5,0" SelectedDate="{Binding MinDate}" VerticalAlignment="Center"/>
+            <DatePicker SelectedDate="{Binding MaxDate}" VerticalAlignment="Center"/>
+        </StackPanel>
+        
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <ScrollViewer Margin="0,8" 
+                      VerticalScrollBarVisibility="Disabled" 
+                      HorizontalScrollBarVisibility="Auto">
+                <ItemsControl Name="Chart" 
+                      Grid.IsSharedSizeScope="true"
+                      ItemsSource="{Binding Path=Weeks}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="{x:Type vm:WeekHistoryVm}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" SharedSizeGroup="Headers"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <Border Background="Wheat" Padding="3,5">
+                                    <TextBlock Text="{Binding Path=Title}" HorizontalAlignment="Center" 
+                                           LayoutTransform="{StaticResource a90}"/>
+                                </Border>
+
+                                <ListBox Grid.Row="1" BorderThickness="0"
+                                         ItemsSource="{Binding Path=StatsList}" 
+                                         SelectedItem="{Binding ElementName=Chart, Path=DataContext.SelectedDaylyStats}">
+                                    <ListBox.ItemContainerStyle>
+                                        <Style TargetType="ListBoxItem">
+                                            <Setter Property="Padding" Value="0"/>                                            
+                                        </Style>
+                                    </ListBox.ItemContainerStyle>
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate DataType="{x:Type stats:DaylyStats}">
+                                            <Border Style="{StaticResource ActivityStyle}"/>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+            
+            <StackPanel Grid.Column="1">
+                <Label Content="Legend" HorizontalAlignment="Right"/>
+                <ItemsControl HorizontalAlignment="Right">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Rows="1"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel>
+                                <Border Style="{StaticResource ActivityStyle}"/>
+                                <TextBlock Text="{Binding Path=Activity}" 
+                                       Margin="0,5"
+                                       HorizontalAlignment="Center" 
+                                       LayoutTransform="{StaticResource a90}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+
+                    <stats:DaylyStats Activity="None"/>
+                    <stats:DaylyStats Activity="Low"/>
+                    <stats:DaylyStats Activity="Average"/>
+                    <stats:DaylyStats Activity="High"/>
+                    <stats:DaylyStats Activity="Great"/>
+                </ItemsControl>
+
+                <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                    <Label>
+                        <TextBlock>
+                        <Run Text="Longest Strike = "/>
+                        <Run Text="{Binding Path=AuthorStats.LongestStreak, Mode=OneWay}"/>
+                        </TextBlock>
+                    </Label>
+                    <Border Style="{StaticResource ActivityStyle}">
+                        <Border.DataContext>
+                            <stats:DaylyStats Activity="Great"/>
+                        </Border.DataContext>
+                    </Border>
+                </StackPanel>
+
+                <Label HorizontalAlignment="Right">
+                    <TextBlock>
+                        <Run Text="{Binding Path=AuthorStats.LongestStreakFirstDate, StringFormat=dd.MM.yyyy, Mode=OneWay}"/>
+                        <Run Text=" - "/>                                               
+                        <Run Text="{Binding Path=AuthorStats.LongestStreakLastDate, StringFormat=dd.MM.yyyy, Mode=OneWay}"/>
+                    </TextBlock>
+                </Label>
+
+                <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                    <Label HorizontalAlignment="Right">
+                        <TextBlock>
+                        <Run Text="Max Commit = "/>
+                        <Run Text="{Binding Path=AuthorStats.MaxCommitCount, Mode=OneWay}"/>
+                        </TextBlock>
+                    </Label>
+                    <Border Style="{StaticResource ActivityStyle}">
+                        <Border.DataContext>
+                            <stats:DaylyStats Activity="Great"/>
+                        </Border.DataContext>
+                    </Border>
+                </StackPanel>
+
+                <Label HorizontalAlignment="Right" Content="{Binding Path=AuthorStats.MaxCommitDate}" ContentStringFormat="dd.MM.yyyy"/>
+
+                <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" 
+                            DataContext="{Binding Path=SelectedDaylyStats}">
+                    <Label HorizontalAlignment="Right">
+                        <TextBlock>
+                        <Run Text="Selected Day = "/>
+                        <Run Text="{Binding Path=CommitCount, Mode=OneWay}"/>
+                        </TextBlock>
+                    </Label>
+                    <Border Style="{StaticResource ActivityStyle}"/>
+                </StackPanel>
+
+                <Label HorizontalAlignment="Right" Content="{Binding Path=SelectedDaylyStats.Date}" ContentStringFormat="dd.MM.yyyy"/>
+
+            </StackPanel>
+        </Grid>
+        
+        <ListBox Grid.Row="2" ItemsSource="{Binding Path=SelectedDaylyStats.Commits}">
+            <ListBox.ItemTemplate>
+                <DataTemplate DataType="{x:Type stats:RevisionInfo}">
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="{Binding Path=Number}"/>
+                        <Label Content="{Binding Path=Comment}"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </Grid>
+</Window>

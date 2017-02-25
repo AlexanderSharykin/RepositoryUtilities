@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -6,22 +7,17 @@ using System.Linq;
 using System.Windows.Forms;
 using RepositoryScanner.Activity;
 using RepositoryScanner.Stats;
+using ViewModels;
 
 namespace RepositoryVisualClient
 {
-    public partial class ActivityChartForm : Form
+    public partial class ActivityChartForm : Form, IVisualDialog
     {
         SolidBrush cNone, cLow, cAverage, cHigh, cGreat;
         SolidBrush _headerBrush = new SolidBrush(Color.Wheat);
         private SolidBrush[] _brushes;
-        private static string[] _months = {
-                                              "Jan", "Feb", "Mar",
-                                              "Apr", "May", "Jun",
-                                              "Jul", "Aug", "Sep",
-                                              "Oct", "Nov", "Dec",
-                                          };
-
-        private PeriodHistory _history;
+        
+        private PeriodHistoryVm _dataContext;
 
         public ActivityChartForm()
         {
@@ -51,11 +47,41 @@ namespace RepositoryVisualClient
             }
         }
 
-        public void ShowActivity(PeriodHistory history)
+        public PeriodHistoryVm DataContext
         {
-            _history = history;
+            get { return _dataContext; }
+            set
+            {
+                if (_dataContext != null)
+                    _dataContext.PropertyChanged -= DataContextChanged;
 
-            for (int i = 0; i < _history.Weeks; i++)
+                _dataContext = value;
+
+                if (_dataContext != null)
+                    _dataContext.PropertyChanged += DataContextChanged;
+            }
+        }
+
+        private void DataContextChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case "Weeks": DisplayHistory(); break;
+                case "SelectedDaylyStats": DisplayDaylyActivity(); break;
+            }
+        }
+
+        public bool? ShowDialog(object dataContext)
+        {
+            DataContext = (PeriodHistoryVm) dataContext;
+            ShowActivity();
+            return true;
+        }
+
+        public void ShowActivity()
+        {
+            var history = DataContext;
+            for (int i = 0; i < history.Weeks.Count; i++)
             {
                 var column = new DataGridViewTextBoxColumn();
                 column.HeaderText = "";
@@ -70,12 +96,13 @@ namespace RepositoryVisualClient
                 grdActivity.Rows[i].Height = 20;
             }
 
-            dtpEnd.MinDate = history.PeriodStart;
-            dtpStart.MinDate = history.PeriodStart;
-            dtpEnd.MaxDate = history.PeriodEnd;
-            dtpStart.MaxDate = history.PeriodEnd;
-            dtpStart.Value = history.PeriodStart;
-            dtpEnd.Value = history.PeriodEnd;
+            dtpStart.Value =
+            dtpStart.MinDate =
+            dtpEnd.MinDate = history.MinDate;
+
+            dtpStart.MaxDate =
+            dtpEnd.Value =
+            dtpEnd.MaxDate = history.MaxDate;
 
             cboAuthors.DataSource = history.Authors.ToList();
             cboAuthors.SelectedIndex = 0;
@@ -87,8 +114,7 @@ namespace RepositoryVisualClient
 
         private void AuthorsSelectedIndexChanged(object sender, EventArgs e)
         {
-            DisplayHistory();
-            DisplayDaylyActivity();
+            DataContext.SelectedAuthor = cboAuthors.SelectedItem.ToString();
         }
 
         private void ActivityCurrentCellChanged(object sender, EventArgs e)
@@ -100,11 +126,9 @@ namespace RepositoryVisualClient
         /// Fills the activity grid with selected author stats
         /// </summary>
         private void DisplayHistory()
-        {
-            var author = cboAuthors.SelectedItem.ToString();
-            var stats = _history[author];
-            var date = _history.PeriodStart;
-
+        {            
+            var stats = DataContext.AuthorStats;
+            
             grdBestStats.Rows.Clear();
             grdBestStats.Rows.Add(
                 stats.LongestStreak,
@@ -113,77 +137,38 @@ namespace RepositoryVisualClient
                 stats.MaxCommitCount,
                 stats.MaxCommitDate.ToShortDateString());
 
-            int w = 0;
-            DateTime weekStart = date;
-            while (date <= _history.PeriodEnd)
+            for (int w = 0; w < DataContext.Weeks.Count; w++)
             {
-                var daylyStats = stats[date];
-
-                int day = (int) date.DayOfWeek;
-                if (day == 0 && date > _history.PeriodStart)
-                    w++;
-                grdActivity[w, day].Value = date;
-
-                #region Sets columns header text
-
-                if (day == 0)
-                    weekStart = date;
-
-                string headerText;
-                if (day == 6 || date == _history.PeriodEnd)
+                grdActivity.Columns[w].HeaderText = DataContext.Weeks[w].Title;
+                for (int day = 0; day < 7; day++)
                 {
-                    int month = weekStart.Month - 1;
-                    if (date.Month != weekStart.Month)
-                    {
-                        if (date.Year != weekStart.Year)
-                            headerText = _months[month] + " " + weekStart.Year + "  " + _months[date.Month - 1] +
-                                         " " +
-                                         date.Year;
+                    var h = DataContext.Weeks[w][day];
+                    grdActivity[w, day].Value = h;
 
-                        else headerText = _months[month] + "  " + _months[date.Month - 1];
-                    }
-                    else headerText = _months[month];
-                    grdActivity.Columns[w].HeaderText = headerText;
+                    Color c = cNone.Color;
+                    if (h != null)
+                        c = GetActivityColor(h.Activity);
+
+                    grdActivity[w, day].Style.BackColor = c;
                 }
-
-
-                #endregion
-
-                Color c = cNone.Color;
-                if (daylyStats != null)
-                    c = GetActivityColor(daylyStats.Activity);
-
-                grdActivity[w, day].Style.BackColor = c;
-
-                date = date.AddDays(1);
             }
+
             grdActivity.Invalidate();
         }
 
         private void DisplayDaylyActivity()
         {
-            DateTime? date = null;
-            var cell = grdActivity.CurrentCell;
-            if (cell != null)
-            {
-                if (cell.RowIndex >= 0 && cell.ColumnIndex >= 0)
-                    date = (DateTime?) cell.Value;
-            }
             txtLogMessages.Text = string.Empty;
             lblSelectedStats.Text = string.Empty;
             txtSelectedStats.BackColor = cNone.Color;
 
-            if (date == null || date.Value < dtpStart.Value || date.Value > dtpEnd.Value)
-                return;                     
-
-            var author = cboAuthors.SelectedItem.ToString();
-            var stats = _history[author][date.Value];
+            var stats = DataContext.SelectedDaylyStats;
             
             // shows list of revisions on date
             if (stats != null)
             {
                 txtSelectedStats.BackColor = GetActivityColor(stats.Activity);
-                lblSelectedStats.Text = string.Format("{0} commits on {1}", stats.CommitCount, date.Value.ToShortDateString());
+                lblSelectedStats.Text = string.Format("{0} commits on {1}", stats.CommitCount, stats.Date.ToShortDateString());
 
                 foreach (var commit in stats.Commits)
                 {
@@ -214,11 +199,20 @@ namespace RepositoryVisualClient
             return c;
         }
 
+        private void SelectedDayChanged(object sender, EventArgs e)
+        {
+            DaylyStats st = null;
+            if (grdActivity.CurrentCell != null)
+                st = grdActivity.CurrentCell.Value as DaylyStats;
+            DataContext.SelectedDaylyStats = st;
+        }
+
         private void PeriodStartValueChanged(object sender, EventArgs e)
         {
             if (dtpStart.Value > dtpEnd.Value)
                 dtpEnd.Value = dtpStart.Value;
-            else
+
+            DataContext.MinDate = dtpStart.Value;
             grdActivity.Invalidate();
         }
 
@@ -227,8 +221,9 @@ namespace RepositoryVisualClient
         {
             if (dtpEnd.Value < dtpStart.Value)
                 dtpStart.Value = dtpEnd.Value;
-            else
-                grdActivity.Invalidate();
+
+            DataContext.MaxDate = dtpEnd.Value;
+            grdActivity.Invalidate();
         }  
 
         /// <summary>
@@ -241,8 +236,8 @@ namespace RepositoryVisualClient
                 return;
             if (e.RowIndex >= 0)
             {
-                var date = (DateTime?) grdActivity[e.ColumnIndex, e.RowIndex].Value;
-                if (!date.HasValue || date < dtpStart.Value || date > dtpEnd.Value)
+                var ds = (DaylyStats) grdActivity[e.ColumnIndex, e.RowIndex].Value;
+                if (ds== null || ds.Date < dtpStart.Value || ds.Date > dtpEnd.Value)
                     e.CellStyle.BackColor = cNone.Color;
                 return;
             }
@@ -357,6 +352,6 @@ namespace RepositoryVisualClient
                 // start default program to show created image
                 Process.Start(filename);
             }
-        }  
+        }
     }
 }
